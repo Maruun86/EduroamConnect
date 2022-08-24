@@ -11,7 +11,7 @@ Files being changed:
   -  /etc/systemd/timesyncd.conf
 
 Infos: Use DOMAIN and TIMESERVER to customize the script
-Author: Pierre Antonschmids
+Author: Pierre Antonschmidts
 --------------------------------
 """
 import os
@@ -33,7 +33,7 @@ def main():
             ModifyWPAAuth(username,password) 
             CheckAddTimeServer()
             CheckForTTelesec()
-            #AskForReboot()
+            AskForReboot()
 
         else:
             print("Remove Username/Password from wpa_supplicant.conf")
@@ -41,14 +41,20 @@ def main():
             AskForReboot()
             
     else:
-        sys.exit("You need root permissions to do this!\nPlease use 'sudo eduroamConnect.py'")
+        sys.exit("You need root permissions to do this!\nPlease use 'sudo python3 eduroamConnect.py'")
 
 
 def IsSUDO():
     """
-    Description: Try to create/remove a fooEdu folder in /etc to check if script is started with SUDO rights.
-    Parameters: NONE
-    Returns: BOOL 
+    Try to create/remove a fooEdu folder in /etc to check if script is started with SUDO rights.
+
+    Parameters 
+    ----------
+    NONE
+
+    return
+    ------- 
+    bool 
     """
     try:
         if (os.path.exists('/etc/fooEdu')):
@@ -64,9 +70,14 @@ def IsSUDO():
 
 def AddOrRemoveEntry():
     """
-    Description: A simple welcome text and question for the next step, a choice between Adding configuration to the system or removing Username/Password
-    Parameters: NONE
-    Returns: BOOL
+    This is a decision function for the user, depending on his choice the further process is split into creating/change of entrys
+    and removing current username/password
+
+    Parameters 
+    ----------
+    NONE
+
+    returns : BOOL
     """
     answer = 0
     while (answer > 2 or answer < 1):
@@ -86,9 +97,15 @@ def AddOrRemoveEntry():
 
 def InputUser():
     """
-    Description: Allows the Input for a Username, and uses the DOMAIN to match it with the Username
-    parameters: NONE
-    return: STRING
+    Allows the Input for a username, and uses the DOMAIN to match it with the username
+
+    parameters
+    ---------- 
+    NONE
+    return
+    ------
+     str 
+        the valid username will be returned
     """
     isValid = False
     while (not isValid):
@@ -102,9 +119,16 @@ def InputUser():
 
 def InputPassword():
     """
-    Description: Allows the Input for a password
-    parameters: NONE
-    return: STRING
+    Allows the Input for a password
+
+    parameters
+    ----------
+    NONE
+
+    return
+    ------
+    str
+        the typed in password
     """
     password = input("Password:") 
     return password
@@ -112,9 +136,15 @@ def InputPassword():
 
 def HasRightDomain(username):
     """
-    Description: Checks if the domain matches the global DOMAIN variable
-    Parameters: username - The username that needs to be checked
-    Return: BOOL
+    Checks if the domain matches the global DOMAIN variable
+    Parameters
+    ----------
+    username : str
+        The username that needs to be checked
+
+    Return
+    ------
+    bool
     """
     if(DOMAIN in username):
         return True
@@ -124,9 +154,15 @@ def HasRightDomain(username):
 
 def CheckAddInterfaces():
     """
-    Description: Checks the /etc/network/interfaces, if it does not exist it creates one with the configuration of the entryString
-    Parameters: NONE
-    Return: NONE
+    Checks the /etc/network/interfaces, if it does not exist it creates one with the configuration of the entryString
+    Parameters
+    ----------
+    NONE
+
+    Return
+    ------
+    NONE
+
     """
 
     filePath = "/etc/network/interfaces"
@@ -137,9 +173,15 @@ def CheckAddInterfaces():
 
 def CheckAddWPA():
     """
-    Description: Checks the /etc/wpa_supplicant/wpa_supplicant.conf if it does not exist it creates one with the configuration of the entryString and entryString2
-    Parameters: NONE
-    Return: NONE
+    Checks the /etc/wpa_supplicant/wpa_supplicant.conf if it does not exist it creates one with the configuration of the entryString and entryString2
+    
+    Parameters
+    ----------
+    NONE
+
+    Return
+    ------
+    NONE
     """
 
     filePath = "/etc/wpa_supplicant/wpa_supplicant.conf"
@@ -183,11 +225,18 @@ def CheckAddWPA():
           
 def ModifyWPAAuth(username, password):
     """
-    Description: Modifys the identity and password entry in the network block inside of the wpa_supplicant.conf
-    Parameters: 
-        username - The username for identity=
-        password - The password for password=
-    Return: NONE
+    Modifys the identity and password entry in the network block inside of the wpa_supplicant.conf
+
+    Parameters
+    ----------
+        username : str
+            The username for eduroam with DOMAIN
+        password : str
+            The password for eduroam
+
+    Return
+    ------
+    NONE
     """
 
     #To make sure change is being done in network
@@ -220,11 +269,16 @@ def ModifyWPAAuth(username, password):
                 
 def WriteIntoFile(filePath, entryString, overwrite=False):
     """
-    Description: Is a function to write a string into a file.
-    Parameters: 
-        filePath - Example: "/etc/wpa_supplicant/wpa_supplicant.conf"
-        entryString - Example: "Hello World"
-        overwrite - OPTIONAL: complely overwrites the file.
+    Is a function to write a string into a file.
+
+    Parameters
+    ---------- 
+        filePath : str
+            Example: "/etc/wpa_supplicant/wpa_supplicant.conf"
+        entryString :str
+            Example: "Hello World"
+        overwrite : bool, optional
+             If true, complely overwrites the file.
     Return: NONE
     """   
 
@@ -248,9 +302,15 @@ def WriteIntoFile(filePath, entryString, overwrite=False):
 
 def CheckAddTimeServer():
     """
-    Description: Checks the /etc/systemd/timesyncd.conf for the correct TIMESERVER entry and changes it when nessesary
-    Parameters: NONE
-    Return: NONE
+    Checks the /etc/systemd/timesyncd.conf for the correct TIMESERVER entry and changes it when nessesary
+
+    Parameters
+    ----------
+    NONE
+
+    Return
+    ------
+    NONE
     """ 
 
     entryString = "[TIME]\nNTP="+TIMESERVER+"\nRootDistanceMaxSec=5\n"
@@ -274,9 +334,15 @@ def CheckAddTimeServer():
 
 def AskForReboot():
     """
-    Description: Needs user confirmation for a reboot otherwise it will just close the script
-    Parameters: NONE
-    Return: NONE
+    Needs user confirmation for a reboot otherwise it will just close the script
+
+    Parameters
+    ----------
+    NONE
+
+    Return
+    ------
+    NONE
     """  
 
     answer = 0
@@ -290,6 +356,17 @@ def AskForReboot():
             sys.exit()
 
 def CheckForTTelesec():
+    """
+    Checks if the file does exist, if it doesnt it will create and registere the nessesary certificate
+
+    Parameters
+    ----------
+    NONE
+
+    Return
+    ------
+    NONE
+    """
     filePath = "/etc/ssl/certs/T-TeleSec_GlobalRoot_Class_2.pem"
     certString = "-----BEGIN CERTIFICATE-----\nMIIDwzCCAqugAwIBAgIBATANBgkqhkiG9w0BAQsFADCBgjELMAkGA1UEBhMCREUx\nKzApBgNVBAoMIlQtU3lzdGVtcyBFbnRlcnByaXNlIFNlcnZpY2VzIEdtYkgxHzAd\nBgNVBAsMFlQtU3lzdGVtcyBUcnVzdCBDZW50ZXIxJTAjBgNVBAMMHFQtVGVsZVNl\nYyBHbG9iYWxSb290IENsYXNzIDIwHhcNMDgxMDAxMTA0MDE0WhcNMzMxMDAxMjM1\nOTU5WjCBgjELMAkGA1UEBhMCREUxKzApBgNVBAoMIlQtU3lzdGVtcyBFbnRlcnBy\naXNlIFNlcnZpY2VzIEdtYkgxHzAdBgNVBAsMFlQtU3lzdGVtcyBUcnVzdCBDZW50\nZXIxJTAjBgNVBAMMHFQtVGVsZVNlYyBHbG9iYWxSb290IENsYXNzIDIwggEiMA0G\nCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCqX9obX+hzkeXaXPSi5kfl82hVYAUd\nAqSzm1nzHoqvNK38DcLZSBnuaY/JIPwhqgcZ7bBcrGXHX+0CfHt8LRvWurmAwhiC\nFoT6ZrAIxlQjgeTNuUk/9k9uN0goOA/FvudocP05l03Sx5iRUKrERLMjfTlH6VJi\n1hKTXrcxlkIF+3anHqP1wvzpesVsqXFP6st4vGCvx9702cu+fjOlbpSD8DT6Iavq\njnKgP6TeMFvvhk1qlVtDRKgQFRzlAVfFmPHmBiiRqiDFt1MmUUOyCxGVWOHAD3bZ\nwI18gfNycJ5v/hqO2V81xrJvNHy+SE/iWjnX2J14np+GPgNeGYtEotXHAgMBAAGj\nQjBAMA8GA1UdEwEB/wQFMAMBAf8wDgYDVR0PAQH/BAQDAgEGMB0GA1UdDgQWBBS/\nWSA2AHmgoCJrjNXyYdK4LMuCSjANBgkqhkiG9w0BAQsFAAOCAQEAMQOiYQsfdOhy\nNsZt+U2e+iKo4YFWz827n+qrkRk4r6p8FU3ztqONpfSO9kSpp+ghla0+AGIWiPAC\nuvxhI+YzmzB6azZie60EI4RYZeLbK4rnJVM3YlNfvNoBYimipidx5joifsFvHZVw\nIEoHNN/q/xWA5brXethbdXwFeilHfkCoMRN3zUA7tFFHei4R40cR3p1m0IvVVGb6\ng1XqfMIpiRvpb7PO4gWEyS8+eIVibslfwXhjdFjASBgMmTnrpMwatXlajRWc2BQN\n9noHV8cigwUtPJslJj0Ys6lDfMjIq2SPDqO/nBudMNva0Bkuqjzx+zOAduTNrRlP\nBSeOE6Fuwg==\n-----END CERTIFICATE-----\n"
 
@@ -303,11 +380,21 @@ def CheckForTTelesec():
         print(filePath+" found...")
 
 def RegisterCertification(certString):
+    """
+    This functions will register the certificate
+
+    Parameters
+    ----------
+        certString : str
+            The nessesary certificate string that needs to be registered
+    
+    Return
+    ------
+    NONE
+    """
+
     filePath = "/etc/ssl/certs/ca-certifications.crt"
-
     WriteIntoFile(filePath, certString)
-
-
 
 main()
 
