@@ -8,5 +8,7 @@ Files being changed:
   -  /etc/systemd/timesyncd.conf
 
 Infos: Use DOMAIN and TIMESERVER to customize the script
+
 Author: Pierre Antonschmidts
+
 Lizence: MIT
